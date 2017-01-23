@@ -1,18 +1,25 @@
-fluentd:
-  build: ./fluentd
-  links:
-   - "elasticsearch"
+app:
+  build: ./docker/app
   ports:
-   - "22422:22422"
+    - "4000:4000"
+    - "4001:4001"
 
-elasticsearch:
-  build: ./elasticsearch
-  expose:
-    - 9200
 
-kibana:
-  image: kibana
-  links:
-   - "elasticsearch"
-  ports:
-   - "5601:5601"
+# fluentd:
+#   build: ./fluentd
+#   links:
+#    - "elasticsearch"
+#   ports:
+#    - "22422:22422"
+
+# elasticsearch:
+#   build: ./elasticsearch
+#   expose:
+#     - 9200
+
+# kibana:
+#   image: kibana
+#   links:
+#    - "elasticsearch"
+#   ports:
+#    - "5601:5601"

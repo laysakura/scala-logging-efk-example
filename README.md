@@ -38,6 +38,15 @@ kibana (tcp:5601)
 
 ## 動作確認
 
+### `VerboseService` のDocker imageを作成
+```bash
+$ sbt 'verboseService/docker:publish-local
+
+$ docker images
+REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE
+verboseservice               0.1.0-SNAPSHOT      fea05aa859e6        18 minutes ago      215 MB
+```
+
 ### DockerでEFKスタックと `VerboseService` を立ち上げる
 ```bash
 docker-compose up
