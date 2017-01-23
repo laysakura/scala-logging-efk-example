@@ -1,3 +1,5 @@
+import com.typesafe.sbt.packager.SettingsHelper._
+
 lazy val commonSettings = Seq(
   organization := "com.github.laysakura",
   scalaVersion := "2.11.8",
@@ -55,12 +57,14 @@ lazy val common = (project in file("common")).
   )
 
 lazy val verboseService = (project in file("verboseService")).
+  enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
-    )
+    ),
+    dockerBaseImage := "java:8-jdk-alpine"
   ).
   aggregate(common, verboseServiceIdl).
   dependsOn(
