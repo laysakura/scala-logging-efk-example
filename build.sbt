@@ -12,6 +12,7 @@ lazy val versions = new {
   val finagle = "6.40.0"
   val finatra = "2.6.0"
   val scrooge = "4.12.0"
+  val `typesafe-config` = "1.3.1"
 
   val guice = "4.0"
   val scalatest = "3.0.1"
@@ -31,9 +32,25 @@ lazy val common = (project in file("common")).
     libraryDependencies ++= Seq(
       "ch.qos.logback" % "logback-classic" % versions.logback,
       "com.twitter" %% "scrooge-core" % versions.scrooge,
+      "com.twitter" %% "inject-core" % versions.finatra,
+      "com.twitter" %% "inject-app" % versions.finatra,
+      "com.typesafe" % "config" % versions.`typesafe-config`,
 
       "org.specs2" %% "specs2" % versions.specs % "test",
-      "org.scalatest" %% "scalatest" % versions.scalatest % "test"
+      "org.scalatest" %% "scalatest" % versions.scalatest % "test",
+
+      // for TestInjector
+      "com.google.inject.extensions" % "guice-testlib" % versions.guice % "test",
+      "com.twitter" %% "finatra-thrift" % versions.finatra % "test",
+      "com.twitter" %% "finatra-thrift" % versions.finatra % "test" classifier "tests",
+      "com.twitter" %% "inject-app" % versions.finatra % "test",
+      "com.twitter" %% "inject-app" % versions.finatra % "test" classifier "tests",
+      "com.twitter" %% "inject-core" % versions.finatra % "test",
+      "com.twitter" %% "inject-core" % versions.finatra % "test" classifier "tests",
+      "com.twitter" %% "inject-modules" % versions.finatra % "test",
+      "com.twitter" %% "inject-modules" % versions.finatra % "test" classifier "tests",
+      "com.twitter" %% "inject-server" % versions.finatra % "test",
+      "com.twitter" %% "inject-server" % versions.finatra % "test" classifier "tests"
     )
   )
 
@@ -44,6 +61,11 @@ lazy val verboseService = (project in file("verboseService")).
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
     )
+  ).
+  aggregate(common, verboseServiceIdl).
+  dependsOn(
+    common % "test->test;compile->compile",
+    verboseServiceIdl % "test->test;compile->compile"
   )
 
 lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).
