@@ -17,7 +17,7 @@ class VerboseServiceTest extends FeatureTest {
     twitterServer = new VerboseServiceServer
   ) with ThriftClient
 
-  lazy val client = server.thriftClient[VerboseService[Future]]("featureTestClient")
+  lazy private val client = server.thriftClient[VerboseService[Future]]("featureTestClient")
 
   "client" should {
     "successfully call echo() API" in {
