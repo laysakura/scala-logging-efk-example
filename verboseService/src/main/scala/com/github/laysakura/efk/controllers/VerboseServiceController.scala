@@ -14,10 +14,10 @@ class VerboseServiceController @Inject() ()
     with Logging
 {
   override val echo = handle(Echo) { args =>
-    debug(s"debug: you said ${args.message}")
-    info(s"info: you said ${args.message}")
-    warn(s"warn: you said ${args.message}")
-    error(s"error: you said ${args.message}")
+    debug(s"""debug!\n\tyou said "${args.message}"""")
+    info(s"""info!\n\tyou said "${args.message}"""")
+    warn(s"""warn!\n\tyou said "${args.message}"""")
+    error(s"""error!\n\tyou said "${args.message}"""")
 
     Future(s"You said: ${args.message}")
   }
