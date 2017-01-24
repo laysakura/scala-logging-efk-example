@@ -1,6 +1,10 @@
 app:
   build: ./docker/app
   ports:
+    # fluentd
+    - "24224:24224"
+
+    # VerboseService
     - "4000:4000"
     - "4001:4001"
 

@@ -1,4 +1,4 @@
-import com.typesafe.sbt.packager.SettingsHelper._
+import com.typesafe.sbt.packager.docker._
 
 lazy val commonSettings = Seq(
   organization := "com.github.laysakura",
@@ -64,7 +64,16 @@ lazy val verboseService = (project in file("verboseService")).
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
     ),
-    dockerBaseImage := "java:8-jdk-alpine"
+    dockerBaseImage := "fluent/fluentd",
+    dockerCommands := Seq(
+      Cmd("FROM", "fluent/fluentd"),
+      Cmd("USER", "root"),
+      Cmd("WORKDIR", "/opt/docker"),
+      Cmd("ADD", "opt /opt"),
+      ExecCmd("RUN", "chown", "-R", "fluent:fluent", "."),
+      ExecCmd("RUN", "apk", "update"),
+      ExecCmd("RUN", "apk", "add", "openjdk8")
+    )
   ).
   aggregate(common, verboseServiceIdl).
   dependsOn(
