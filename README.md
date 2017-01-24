@@ -43,7 +43,7 @@ kibana (tcp:5601)
 
 ### `VerboseService` のDocker imageを作成
 ```bash
-$ sbt 'verboseService/docker:publish-local
+$ sbt 'verboseService/docker:publish-local'
 
 $ docker images
 REPOSITORY                   TAG                 IMAGE ID            CREATED             SIZE

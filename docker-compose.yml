@@ -1,20 +1,20 @@
 app:
   build: ./docker/app
-  expose:
+  ports:
     # fluentd
-    - 24224
+    - "24224:24224"
 
     # VerboseService
-    - 4000
-    - 4001
+    - "4000:4000"
+    - "4001:4001"
   links:
    - "elasticsearch"
 
 elasticsearch:
   build: ./docker/elasticsearch
-  expose:
-    - 9200
-    - 9300
+  ports:
+    - "9200:9200"
+    - "9300:9300"
 
 # kibana:
 #   image: kibana
