@@ -15,7 +15,7 @@ VerboseServiceTest
 VerboseService (tcp:4000)
   |
   v
-`/app/scala-logging-efk-example/logs/application.yyyyMMdd.{error,warn,info,debug}.log`
+`/var/log/verboseService.yyyy-MM-dd.{error,warn,info,debug}.log`
   |
   v
 td-agent (tcp:22422)
@@ -61,3 +61,14 @@ sbt test
 ```
 
 ### Kibanaで諸々確認
+
+
+## 開発フロー
+
+### Scalaプロジェクトをいじってイメージを作り直して `docker-compose up`
+```bash
+(docker images |egrep 'scalaloggingefkexample|verboseservice' |awk '{print $3}' |xargs docker rmi -f) && docker-compose rm && sbt 'verboseService/docker:publish-local' && docker-compose up
+```
+
+### 各種ログファイルの確認
+ホスト側の `/tmp/scala-logging-efk-example/logs/` 以下に、ゲスト側の各ログが吐かれるようにボリュームマウントをしている。

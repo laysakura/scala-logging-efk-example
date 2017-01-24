@@ -1,24 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/verboseService.log</file>
+        <file>/var/log/verboseService.log</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/verboseService.%d{yyyy-MM-dd}.log.tar.gz</fileNamePattern>
+            <fileNamePattern>/var/log/verboseService.%d{yyyy-MM-dd}.log.tar.gz</fileNamePattern>
             <maxHistory>7</maxHistory>
         </rollingPolicy>
         <encoder class="net.logstash.logback.encoder.LogstashEncoder" />
     </appender>
 
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
-            <Pattern>
-                [%-5level][%d{yyyy-MM-dd HH:mm:ss.SSS}] %msg%n
-            </Pattern>
-        </encoder>
-    </appender>
-
     <root level="INFO">
-        <appender-ref ref="CONSOLE" />
         <appender-ref ref="FILE" />
     </root>
 
