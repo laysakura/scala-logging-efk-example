@@ -22,11 +22,14 @@ td-agent (tcp:22422)
   |
 --|---------------------
   |
---|-- log-collector ----
+--|- elasticsearch -----
   |
   v
 Elasticsearch (tcp:9200)
   |
+--|---------------------
+  |
+--|----- kibana --------
   v
 kibana (tcp:5601)
   ^
