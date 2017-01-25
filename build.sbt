@@ -79,6 +79,8 @@ lazy val verboseService = (project in file("verboseService")).
       "com.twitter" %% "finagle-core" % versions.finagle
     ),
     dockerBaseImage := "fluent/fluentd:latest-onbuild",
+
+    // fluentdの立ち上げ前に必要なセットアップと、verboseServiceのセットアップ
     dockerCommands := Seq(
       Cmd("FROM", "fluent/fluentd:latest-onbuild"),
       Cmd("USER", "root"),
