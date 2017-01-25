@@ -21,7 +21,7 @@ lazy val fluentdDockerSettings = Seq(
 
   dockerBaseImage := "fluent/fluentd:latest-onbuild",
 
-  // fluentdの立ち上げ前に必要なセットアップと、verboseServiceのセットアップ
+  // fluentdの立ち上げ前に必要なセットアップと、コンパイルしたServiceのセットアップ
   dockerCommands := Seq(
     Cmd("FROM", "fluent/fluentd:latest-onbuild"),
     Cmd("USER", "root"),
@@ -64,7 +64,8 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   aggregate(
     common,
-    verboseService
+    verboseService,
+    calculatorService
   )
 
 lazy val common = (project in file("common")).
@@ -115,6 +116,33 @@ lazy val verboseService = (project in file("verboseService")).
   )
 
 lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).
+  settings(commonSettings: _*).
+  settings(
+    libraryDependencies ++= Seq(
+      "com.twitter" %% "finatra-thrift" % versions.finatra,
+      "com.twitter" %% "scrooge-core" % versions.scrooge
+    ),
+    scroogeThriftSourceFolder in Compile <<= baseDirectory { base => base / "src/main/thrift" },
+    scroogeThriftDependencies in Compile := Seq("finatra-thrift_2.11")
+  )
+
+lazy val calculatorService = (project in file("calculatorService")).
+  enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
+  settings(commonSettings: _*).
+  settings(fluentdDockerSettings: _*).
+  settings(
+    libraryDependencies ++= Seq(
+      "com.twitter" %% "finagle-thrift" % versions.finagle,
+      "com.twitter" %% "finagle-core" % versions.finagle
+    )
+  ).
+  aggregate(common, calculatorServiceIdl).
+  dependsOn(
+    common % "test->test;compile->compile",
+    calculatorServiceIdl % "test->test;compile->compile"
+  )
+
+lazy val calculatorServiceIdl = (project in file("calculatorServiceIdl")).
   settings(commonSettings: _*).
   settings(
     libraryDependencies ++= Seq(
