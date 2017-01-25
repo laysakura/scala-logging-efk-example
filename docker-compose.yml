@@ -1,0 +1,26 @@
+app:
+  build: ./docker/app
+  ports:
+    # fluentd
+    - 24224:24224
+
+    # VerboseService
+    - 4000:4000
+    - 4001:4001
+  volumes:
+    - /tmp/scala-logging-efk-example/logs/app:/var/log
+  links:
+    - elasticsearch
+
+elasticsearch:
+  build: ./docker/elasticsearch
+  ports:
+    - 9200:9200
+    - 9300:9300
+
+kibana:
+  build: ./docker/kibana
+  links:
+   - elasticsearch
+  ports:
+   - 5601:5601
