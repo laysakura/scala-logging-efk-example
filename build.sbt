@@ -58,18 +58,48 @@ lazy val common = (project in file("common")).
     )
   )
 
+lazy val copyFluentFilesTask = TaskKey[Unit]("copyFluentFiles")
+
 lazy val verboseService = (project in file("verboseService")).
   enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
   settings(commonSettings: _*).
+  settings(
+    copyFluentFilesTask := {
+      IO.copyFile(baseDirectory.value / ".." / "docker" / "app" / "fluentd" / "fluent.conf", (stage in Docker).value / "fluent.conf")
+      IO.copyDirectory(baseDirectory.value / ".." / "docker" / "app" / "fluentd" / "plugins", (stage in Docker).value / "plugins")
+    },
+    publishLocal in Docker := {
+      copyFluentFilesTask.value
+      (publishLocal in Docker).value
+    }
+  ).
   settings(
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
     ),
-    dockerBaseImage := "fluent/fluentd",
+    dockerBaseImage := "fluent/fluentd:latest-onbuild",
     dockerCommands := Seq(
-      Cmd("FROM", "fluent/fluentd"),
+      Cmd("FROM", "fluent/fluentd:latest-onbuild"),
       Cmd("USER", "root"),
+
+      ExecCmd("RUN", "apk", "update"),
+      ExecCmd("RUN", "apk", "add", "build-base"),
+      ExecCmd("RUN", "apk", "add", "ruby-dev"),
+
+      Cmd("USER", "fluent"),
+      Cmd("WORKDIR", "/home/fluent"),
+      Cmd("ENV", "PATH", "/home/fluent/.gem/ruby/2.3.0/bin:$PATH"),
+
+      ExecCmd("RUN", "gem", "install", "fluent-plugin-elasticsearch"),
+
+      ExecCmd("RUN", "rm", "-rf", "/home/fluent/.gem/ruby/2.3.0/cache/*.gem"),
+      ExecCmd("RUN", "gem", "sources", "-c"),
+
+      Cmd("USER", "root"),
+      ExecCmd("RUN", "apk", "del", "build-base"),
+      ExecCmd("RUN", "apk", "del", "ruby-dev"),
+
       Cmd("ADD", "opt /opt")
     )
   ).
