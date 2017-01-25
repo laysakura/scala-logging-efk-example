@@ -5,7 +5,6 @@ USER root
 ## 必要パッケージのインストール
 RUN apk update
 RUN apk add openjdk8
-RUN apk add curl
 
 ## パーミション
 RUN chown -R fluent:fluent /opt/docker
