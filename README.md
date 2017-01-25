@@ -55,13 +55,18 @@ verboseservice               0.1.0-SNAPSHOT      fea05aa859e6        18 minutes 
 docker-compose up
 ```
 
-### `VerboseServiceTest` を立ち上げ、ログを吐かせる
+### `VerboseServiceTest` を立ち上げ、ログを吐かせる（推奨）
 ```bash
 sbt test
 ```
+多様なアプリログを吐くための手順。 `VerboseService` の起動ログはテストを走らせないでも出力されていてKibanaで見られるので、必須ではない。
 
-### Kibanaで諸々確認
-
+### Kibanaからログの確認
+- http://localhost:5601 にアクセス
+- インデックス名を `fluentd*` , time-field名を `@timestamp` に設定
+    - x
+- Discoverタブから色々見られる。
+    - x
 
 ## 開発フロー
 
