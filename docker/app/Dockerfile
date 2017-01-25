@@ -13,6 +13,6 @@ RUN chown -R fluent:fluent /opt/docker
 ## entrypoint.sh の配置から立ち上げまで
 ADD entrypoint.sh /opt/
 RUN chown fluent:fluent /opt/entrypoint.sh
-USER fluent
+# USER fluent
 RUN chmod 755 /opt/entrypoint.sh
 ENTRYPOINT /opt/entrypoint.sh
