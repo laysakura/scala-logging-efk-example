@@ -70,11 +70,7 @@ lazy val verboseService = (project in file("verboseService")).
     dockerCommands := Seq(
       Cmd("FROM", "fluent/fluentd"),
       Cmd("USER", "root"),
-      Cmd("WORKDIR", "/opt/docker"),
-      Cmd("ADD", "opt /opt"),
-      ExecCmd("RUN", "chown", "-R", "fluent:fluent", "."),
-      ExecCmd("RUN", "apk", "update"),
-      ExecCmd("RUN", "apk", "add", "openjdk8")
+      Cmd("ADD", "opt /opt")
     )
   ).
   aggregate(common, verboseServiceIdl).
