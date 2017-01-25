@@ -64,9 +64,9 @@ sbt test
 ### Kibanaからログの確認
 - http://localhost:5601 にアクセス
 - インデックス名を `fluentd*` , time-field名を `@timestamp` に設定
-    - ![インデックス指定画面](https://cloud.githubusercontent.com/assets/498788/22278137/6486a90a-e304-11e6-89f2-a24a59d9a803.png)
+  ![インデックス指定画面](https://cloud.githubusercontent.com/assets/498788/22278137/6486a90a-e304-11e6-89f2-a24a59d9a803.png)
 - Discoverタブから色々見られる。
-    - ![ログを見る画面](https://cloud.githubusercontent.com/assets/498788/22278127/53ee53b8-e304-11e6-8e85-ae6a09f26bbd.png)
+  ![ログを見る画面](https://cloud.githubusercontent.com/assets/498788/22278127/53ee53b8-e304-11e6-8e85-ae6a09f26bbd.png)
     
 ## 開発フロー
 
