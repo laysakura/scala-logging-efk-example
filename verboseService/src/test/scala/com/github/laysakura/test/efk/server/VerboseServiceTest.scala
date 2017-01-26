@@ -1,17 +1,16 @@
 package com.github.laysakura.test.efk.server
 
-import com.github.laysakura.efk.idl.VerboseService
-import com.github.laysakura.efk.modules.ConfigModule
-import com.twitter.finagle.Thrift
+import com.github.laysakura.efk.idl.VerboseService$FinagleClient
+import com.github.laysakura.efk.modules.{ClientIdModule, ConfigModule, VerboseServiceConfigModule, VerboseServiceModule}
 import com.twitter.inject.app.TestInjector
-import com.twitter.util.{Await, Future}
+import com.twitter.util.Await
 
 class VerboseServiceTest extends com.twitter.inject.Test with com.twitter.inject.IntegrationTest {
   override val injector = TestInjector(
-    modules = Seq(ConfigModule)
+    modules = Seq(ConfigModule, new ClientIdModule("VerboseServiceTest"), VerboseServiceModule, VerboseServiceConfigModule)
   )
 
-  lazy private val client = Thrift.client.newIface[VerboseService[Future]]("localhost:4000")
+  private val client = injector.instance[VerboseService$FinagleClient]
 
   "client" should {
     "successfully call echo() API" in {

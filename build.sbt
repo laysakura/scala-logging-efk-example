@@ -112,7 +112,8 @@ lazy val verboseService = (project in file("verboseService")).
   aggregate(common, verboseServiceIdl).
   dependsOn(
     common % "test->test;compile->compile",
-    verboseServiceIdl % "test->test;compile->compile"
+    verboseServiceIdl % "test->test;compile->compile",
+    calculatorServiceIdl % "test->test;compile->compile"
   )
 
 lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).

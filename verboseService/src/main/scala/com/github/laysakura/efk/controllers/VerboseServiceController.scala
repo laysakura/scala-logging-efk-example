@@ -8,7 +8,9 @@ import com.twitter.inject.Logging
 import com.twitter.util.Future
 
 @Singleton
-class VerboseServiceController @Inject() ()
+class VerboseServiceController @Inject() (
+
+)
   extends Controller
     with idl.VerboseService.BaseServiceIface
     with Logging
@@ -18,6 +20,8 @@ class VerboseServiceController @Inject() ()
     info(s"""info!\n\tyou said "${args.message}"""")
     warn(s"""warn!\n\tyou said "${args.message}"""")
     error(s"""error!\n\tyou said "${args.message}"""")
+
+    warn(s"""Verbose "WHAT IS 1+1, Mr. Calc?"Mr. Calc "Mmm... It's ${}!!"\n""")
 
     Future(s"You said: ${args.message}")
   }
