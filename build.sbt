@@ -1,5 +1,8 @@
 import com.typesafe.sbt.packager.docker._
 
+lazy val fluentDirectoryTask = TaskKey[File]("fluentDirectory")
+lazy val copyFluentFilesTask = TaskKey[Unit]("copyFluentFiles")
+
 lazy val commonSettings = Seq(
   organization := "com.github.laysakura",
   scalaVersion := "2.11.8",
@@ -7,6 +10,45 @@ lazy val commonSettings = Seq(
   version := (version in ThisBuild).value,
   parallelExecution in ThisBuild := false,
   resolvers += ("twitter" at "https://maven.twttr.com")
+)
+
+lazy val fluentdDockerSettings = Seq(
+  copyFluentFilesTask := {
+    IO.copyFile(fluentDirectoryTask.value / "fluent.conf", (stage in Docker).value / "fluent.conf")
+    IO.copyDirectory(fluentDirectoryTask.value / "plugins", (stage in Docker).value / "plugins")
+  },
+
+  publishLocal in Docker := {
+    copyFluentFilesTask.value
+    (publishLocal in Docker).value
+  },
+
+  dockerBaseImage := "fluent/fluentd:latest-onbuild",
+
+  // fluentdの立ち上げ前に必要なセットアップと、コンパイルしたServiceのセットアップ
+  dockerCommands := Seq(
+    Cmd("FROM", "fluent/fluentd:latest-onbuild"),
+    Cmd("USER", "root"),
+
+    ExecCmd("RUN", "apk", "update"),
+    ExecCmd("RUN", "apk", "add", "build-base"),
+    ExecCmd("RUN", "apk", "add", "ruby-dev"),
+
+    Cmd("USER", "fluent"),
+    Cmd("WORKDIR", "/home/fluent"),
+    Cmd("ENV", "PATH", "/home/fluent/.gem/ruby/2.3.0/bin:$PATH"),
+
+    ExecCmd("RUN", "gem", "install", "fluent-plugin-elasticsearch"),
+
+    ExecCmd("RUN", "rm", "-rf", "/home/fluent/.gem/ruby/2.3.0/cache/*.gem"),
+    ExecCmd("RUN", "gem", "sources", "-c"),
+
+    Cmd("USER", "root"),
+    ExecCmd("RUN", "apk", "del", "build-base"),
+    ExecCmd("RUN", "apk", "del", "ruby-dev"),
+
+    Cmd("ADD", "opt /opt")
+  )
 )
 
 lazy val versions = new {
@@ -26,7 +68,8 @@ lazy val root = (project in file(".")).
   settings(commonSettings: _*).
   aggregate(
     common,
-    verboseService
+    verboseService,
+    calculatorService
   )
 
 lazy val common = (project in file("common")).
@@ -58,57 +101,26 @@ lazy val common = (project in file("common")).
     )
   )
 
-lazy val copyFluentFilesTask = TaskKey[Unit]("copyFluentFiles")
-
 lazy val verboseService = (project in file("verboseService")).
   enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
   settings(commonSettings: _*).
-  settings(
-    copyFluentFilesTask := {
-      IO.copyFile(baseDirectory.value / ".." / "docker" / "app" / "fluentd" / "fluent.conf", (stage in Docker).value / "fluent.conf")
-      IO.copyDirectory(baseDirectory.value / ".." / "docker" / "app" / "fluentd" / "plugins", (stage in Docker).value / "plugins")
-    },
-    publishLocal in Docker := {
-      copyFluentFilesTask.value
-      (publishLocal in Docker).value
-    }
+    settings(
+    fluentDirectoryTask := { baseDirectory.value / ".." / "docker" / "app1" / "fluentd" }
   ).
+  settings(fluentdDockerSettings: _*).
   settings(
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
     ),
-    dockerBaseImage := "fluent/fluentd:latest-onbuild",
-
-    // fluentdの立ち上げ前に必要なセットアップと、verboseServiceのセットアップ
-    dockerCommands := Seq(
-      Cmd("FROM", "fluent/fluentd:latest-onbuild"),
-      Cmd("USER", "root"),
-
-      ExecCmd("RUN", "apk", "update"),
-      ExecCmd("RUN", "apk", "add", "build-base"),
-      ExecCmd("RUN", "apk", "add", "ruby-dev"),
-
-      Cmd("USER", "fluent"),
-      Cmd("WORKDIR", "/home/fluent"),
-      Cmd("ENV", "PATH", "/home/fluent/.gem/ruby/2.3.0/bin:$PATH"),
-
-      ExecCmd("RUN", "gem", "install", "fluent-plugin-elasticsearch"),
-
-      ExecCmd("RUN", "rm", "-rf", "/home/fluent/.gem/ruby/2.3.0/cache/*.gem"),
-      ExecCmd("RUN", "gem", "sources", "-c"),
-
-      Cmd("USER", "root"),
-      ExecCmd("RUN", "apk", "del", "build-base"),
-      ExecCmd("RUN", "apk", "del", "ruby-dev"),
-
-      Cmd("ADD", "opt /opt")
+    javaOptions in Universal ++= Seq(
+      "-Dlog.service.output=verboseService"
     )
   ).
-  aggregate(common, verboseServiceIdl).
+  aggregate(verboseServiceIdl).
   dependsOn(
-    common % "test->test;compile->compile",
-    verboseServiceIdl % "test->test;compile->compile"
+    verboseServiceIdl % "test->test;compile->compile",
+    calculatorServiceIdl % "test->test;compile->compile"
   )
 
 lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).
@@ -120,4 +132,39 @@ lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).
     ),
     scroogeThriftSourceFolder in Compile <<= baseDirectory { base => base / "src/main/thrift" },
     scroogeThriftDependencies in Compile := Seq("finatra-thrift_2.11")
-  )
+  ).
+  aggregate(common).
+  dependsOn(common % "test->test;compile->compile")
+
+lazy val calculatorService = (project in file("calculatorService")).
+  enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
+  settings(commonSettings: _*).
+  settings(
+    fluentDirectoryTask := { baseDirectory.value / ".." / "docker" / "app2" / "fluentd" }
+  ).
+  settings(fluentdDockerSettings: _*).
+  settings(
+    libraryDependencies ++= Seq(
+      "com.twitter" %% "finagle-thrift" % versions.finagle,
+      "com.twitter" %% "finagle-core" % versions.finagle
+    ),
+    javaOptions in Universal ++= Seq(
+      "-Dlog.service.output=calculatorService"
+    )
+  ).
+  aggregate(calculatorServiceIdl).
+  dependsOn(calculatorServiceIdl % "test->test;compile->compile")
+
+lazy val calculatorServiceIdl = (project in file("calculatorServiceIdl")).
+  settings(commonSettings: _*).
+  settings(
+    libraryDependencies ++= Seq(
+      "com.twitter" %% "finatra-thrift" % versions.finatra,
+      "com.twitter" %% "scrooge-core" % versions.scrooge
+    ),
+    scroogeThriftSourceFolder in Compile <<= baseDirectory { base => base / "src/main/thrift" },
+    scroogeThriftDependencies in Compile := Seq("finatra-thrift_2.11")
+  ).
+  aggregate(common).
+  dependsOn(common % "test->test;compile->compile")
+

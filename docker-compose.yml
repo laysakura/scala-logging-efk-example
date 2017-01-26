@@ -1,5 +1,5 @@
-app:
-  build: ./docker/app
+app1:
+  build: ./docker/app1
   ports:
     # fluentd
     - 24224:24224
@@ -8,7 +8,22 @@ app:
     - 4000:4000
     - 4001:4001
   volumes:
-    - /tmp/scala-logging-efk-example/logs/app:/var/log
+    - /tmp/scala-logging-efk-example/logs/app1:/var/log
+  links:
+    - app2
+    - elasticsearch
+
+app2:
+  build: ./docker/app2
+  ports:
+    # fluentd
+    - 24225:24224
+
+    # CalculatorService
+    - 5000:5000
+    - 5001:5001
+  volumes:
+    - /tmp/scala-logging-efk-example/logs/app2:/var/log
   links:
     - elasticsearch
 

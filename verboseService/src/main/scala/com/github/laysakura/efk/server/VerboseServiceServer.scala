@@ -1,6 +1,8 @@
 package com.github.laysakura.efk.server
 
 import com.github.laysakura.efk.controllers.VerboseServiceController
+import com.github.laysakura.efk.modules.{CalculatorServiceConfigModule, CalculatorServiceModule, ClientIdModule}
+import com.twitter.finatra.thrift.filters.TraceIdMDCFilter
 import com.twitter.finatra.thrift.ThriftServer
 import com.twitter.finatra.thrift.routing.ThriftRouter
 
@@ -13,11 +15,16 @@ class VerboseServiceServer extends ThriftServer
   override val defaultFinatraThriftPort: String = s":$THRIFT_PORT"
   override def defaultHttpPort: Int = ADMIN_PORT
 
+  override val modules = Seq(
+    new ClientIdModule("VerboseServiceServer"),
+    CalculatorServiceModule, CalculatorServiceConfigModule
+  )
+
   override def configureThrift(router: ThriftRouter) {
     router
       // TODO filterを追加し、ログを見る
 //      .filter[thrift.filters.LoggingMDCFilter]
-//      .filter[thrift.filters.TraceIdMDCFilter]
+      .filter[TraceIdMDCFilter]
 //      .filter[thrift.filters.ThriftMDCFilter]
 //      .filter[thrift.filters.AccessLoggingFilter]
 //      .filter[thrift.filters.StatsFilter]
