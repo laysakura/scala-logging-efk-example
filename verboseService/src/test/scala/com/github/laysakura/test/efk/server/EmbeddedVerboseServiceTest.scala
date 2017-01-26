@@ -1,5 +1,6 @@
 package com.github.laysakura.test.efk.server
 
+import com.github.laysakura.efk.server.CalculatorServiceServer
 import com.github.laysakura.efk.idl.{VerboseService, VerboseService$FinagleClient}
 import com.github.laysakura.efk.modules._
 import com.github.laysakura.efk.server.VerboseServiceServer
@@ -12,6 +13,7 @@ class EmbeddedVerboseServiceTest extends FeatureTest {
   override val injector = TestInjector(
     modules = Seq(
       new ClientIdModule("VerboseServiceTest"),
+      ConfigModule,
       VerboseServiceModule, VerboseServiceConfigModule,
       CalculatorServiceModule, CalculatorServiceConfigModule
     )

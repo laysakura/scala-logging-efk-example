@@ -9,6 +9,7 @@ class VerboseServiceTest extends com.twitter.inject.Test with com.twitter.inject
   override val injector = TestInjector(
     modules = Seq(
       new ClientIdModule("VerboseServiceTest"),
+      ConfigModule,
       VerboseServiceModule, VerboseServiceConfigModule,
       CalculatorServiceModule, CalculatorServiceConfigModule
     )

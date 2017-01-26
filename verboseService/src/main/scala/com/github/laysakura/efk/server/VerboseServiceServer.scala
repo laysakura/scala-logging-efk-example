@@ -1,7 +1,7 @@
 package com.github.laysakura.efk.server
 
 import com.github.laysakura.efk.controllers.VerboseServiceController
-import com.github.laysakura.efk.modules.{CalculatorServiceConfigModule, CalculatorServiceModule, ClientIdModule}
+import com.github.laysakura.efk.modules.{CalculatorServiceConfigModule, CalculatorServiceModule, ClientIdModule, ConfigModule}
 import com.twitter.finatra.thrift.filters.TraceIdMDCFilter
 import com.twitter.finatra.thrift.ThriftServer
 import com.twitter.finatra.thrift.routing.ThriftRouter
@@ -17,6 +17,7 @@ class VerboseServiceServer extends ThriftServer
 
   override val modules = Seq(
     new ClientIdModule("VerboseServiceServer"),
+    ConfigModule,
     CalculatorServiceModule, CalculatorServiceConfigModule
   )
 
