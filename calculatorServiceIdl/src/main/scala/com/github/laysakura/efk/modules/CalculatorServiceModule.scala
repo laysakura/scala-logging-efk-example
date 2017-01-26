@@ -1,8 +1,8 @@
 package com.github.laysakura.efk.modules
 
-import com.github.laysakura.efk.annotations.CalculatorServiceServer
 import com.github.laysakura.efk.annotations
-import com.github.laysakura.efk.idl.{CalculatorService, CalculatorService$FinagleClient}
+import com.github.laysakura.efk.annotations.CalculatorServiceServer
+import com.github.laysakura.efk.idl.CalculatorService
 import com.google.inject.{Provides, Singleton}
 import com.twitter.finagle.ThriftMux
 import com.twitter.finagle.thrift.ClientId
@@ -10,12 +10,7 @@ import com.twitter.inject.TwitterModule
 import com.twitter.util.Future
 
 object CalculatorServiceModule extends TwitterModule {
-  val ServiceName = "verbose-service-api"
-
-  @Provides
-  @Singleton
-  def provideCalculatorServiceFinagleClient(client: CalculatorService[Future]): CalculatorService$FinagleClient =
-    client.asInstanceOf[CalculatorService$FinagleClient]
+  val ServiceName = "calculator-service"
 
   @Provides
   @Singleton
