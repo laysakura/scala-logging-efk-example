@@ -1,5 +1,8 @@
 import com.typesafe.sbt.packager.docker._
 
+lazy val fluentDirectoryTask = TaskKey[File]("fluentDirectory")
+lazy val copyFluentFilesTask = TaskKey[Unit]("copyFluentFiles")
+
 lazy val commonSettings = Seq(
   organization := "com.github.laysakura",
   scalaVersion := "2.11.8",
@@ -11,9 +14,10 @@ lazy val commonSettings = Seq(
 
 lazy val fluentdDockerSettings = Seq(
   copyFluentFilesTask := {
-    IO.copyFile(baseDirectory.value / ".." / "docker" / "app" / "fluentd" / "fluent.conf", (stage in Docker).value / "fluent.conf")
-    IO.copyDirectory(baseDirectory.value / ".." / "docker" / "app" / "fluentd" / "plugins", (stage in Docker).value / "plugins")
+    IO.copyFile(fluentDirectoryTask.value / "fluent.conf", (stage in Docker).value / "fluent.conf")
+    IO.copyDirectory(fluentDirectoryTask.value / "plugins", (stage in Docker).value / "plugins")
   },
+
   publishLocal in Docker := {
     copyFluentFilesTask.value
     (publishLocal in Docker).value
@@ -97,16 +101,20 @@ lazy val common = (project in file("common")).
     )
   )
 
-lazy val copyFluentFilesTask = TaskKey[Unit]("copyFluentFiles")
-
 lazy val verboseService = (project in file("verboseService")).
   enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
   settings(commonSettings: _*).
+    settings(
+    fluentDirectoryTask := { baseDirectory.value / ".." / "docker" / "app1" / "fluentd" }
+  ).
   settings(fluentdDockerSettings: _*).
   settings(
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
+    ),
+    javaOptions in Universal ++= Seq(
+      "-Dlog.service.output=verboseService.log"
     )
   ).
   aggregate(verboseServiceIdl).
@@ -131,11 +139,17 @@ lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).
 lazy val calculatorService = (project in file("calculatorService")).
   enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
   settings(commonSettings: _*).
+  settings(
+    fluentDirectoryTask := { baseDirectory.value / ".." / "docker" / "app2" / "fluentd" }
+  ).
   settings(fluentdDockerSettings: _*).
   settings(
     libraryDependencies ++= Seq(
       "com.twitter" %% "finagle-thrift" % versions.finagle,
       "com.twitter" %% "finagle-core" % versions.finagle
+    ),
+    javaOptions in Universal ++= Seq(
+      "-Dlog.service.output=calculatorService.log"
     )
   ).
   aggregate(calculatorServiceIdl).
