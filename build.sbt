@@ -109,9 +109,8 @@ lazy val verboseService = (project in file("verboseService")).
       "com.twitter" %% "finagle-core" % versions.finagle
     )
   ).
-  aggregate(common, verboseServiceIdl).
+  aggregate(verboseServiceIdl).
   dependsOn(
-    common % "test->test;compile->compile",
     verboseServiceIdl % "test->test;compile->compile",
     calculatorServiceIdl % "test->test;compile->compile"
   )
@@ -125,7 +124,9 @@ lazy val verboseServiceIdl = (project in file("verboseServiceIdl")).
     ),
     scroogeThriftSourceFolder in Compile <<= baseDirectory { base => base / "src/main/thrift" },
     scroogeThriftDependencies in Compile := Seq("finatra-thrift_2.11")
-  )
+  ).
+  aggregate(common).
+  dependsOn(common % "test->test;compile->compile")
 
 lazy val calculatorService = (project in file("calculatorService")).
   enablePlugins(JavaAppPackaging, AshScriptPlugin, DockerPlugin).
@@ -137,11 +138,8 @@ lazy val calculatorService = (project in file("calculatorService")).
       "com.twitter" %% "finagle-core" % versions.finagle
     )
   ).
-  aggregate(common, calculatorServiceIdl).
-  dependsOn(
-    common % "test->test;compile->compile",
-    calculatorServiceIdl % "test->test;compile->compile"
-  )
+  aggregate(calculatorServiceIdl).
+  dependsOn(calculatorServiceIdl % "test->test;compile->compile")
 
 lazy val calculatorServiceIdl = (project in file("calculatorServiceIdl")).
   settings(commonSettings: _*).
@@ -152,4 +150,7 @@ lazy val calculatorServiceIdl = (project in file("calculatorServiceIdl")).
     ),
     scroogeThriftSourceFolder in Compile <<= baseDirectory { base => base / "src/main/thrift" },
     scroogeThriftDependencies in Compile := Seq("finatra-thrift_2.11")
-  )
+  ).
+  aggregate(common).
+  dependsOn(common % "test->test;compile->compile")
+

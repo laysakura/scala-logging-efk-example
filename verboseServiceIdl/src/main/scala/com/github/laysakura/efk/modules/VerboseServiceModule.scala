@@ -1,7 +1,7 @@
 package com.github.laysakura.efk.modules
 
-import com.github.laysakura.efk.annotations
 import com.github.laysakura.efk.annotations.VerboseServiceServer
+import com.github.laysakura.efk.annotations
 import com.github.laysakura.efk.idl.{VerboseService, VerboseService$FinagleClient}
 import com.google.inject.{Provides, Singleton}
 import com.twitter.finagle.ThriftMux
