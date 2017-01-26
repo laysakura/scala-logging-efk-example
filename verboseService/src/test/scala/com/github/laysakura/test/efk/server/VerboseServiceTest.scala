@@ -8,7 +8,6 @@ import com.twitter.util.Await
 class VerboseServiceTest extends com.twitter.inject.Test with com.twitter.inject.IntegrationTest {
   override val injector = TestInjector(
     modules = Seq(
-      ConfigModule,
       new ClientIdModule("VerboseServiceTest"),
       VerboseServiceModule, VerboseServiceConfigModule,
       CalculatorServiceModule, CalculatorServiceConfigModule
