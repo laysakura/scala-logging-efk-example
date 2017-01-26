@@ -70,6 +70,11 @@ sbt test
 - Discoverタブから色々見られる。
   ![ログを見る画面](https://cloud.githubusercontent.com/assets/498788/22278127/53ee53b8-e304-11e6-8e85-ae6a09f26bbd.png)
 
+#### traceIdによる絞込
+これにより、クライアントからの1つのリクエストに対するレスポンスを返すのに複数のサービスが関わっていたとしても、その1つのリクエストで起こったことをサービス横串で確認できる。
+
+![traceIdによる絞込](https://cloud.githubusercontent.com/assets/498788/22317159/5c1c7770-e3b5-11e6-9335-2deff3f57e6d.png)
+
 ## 開発フロー
 
 ### Scalaプロジェクトをいじってイメージを作り直して `docker-compose up`
