@@ -16,7 +16,7 @@ app2:
   build: ./docker/app2
   ports:
     # fluentd
-    - 24224:24224
+    - 24225:24224
 
     # CalculatorService
     - 5000:5000
