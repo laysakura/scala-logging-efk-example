@@ -14,6 +14,7 @@ class CalculatorServiceController @Inject() ()
     with Logging
 {
   override val sum = handle(Sum) { args =>
+    warn("Mmmmmmmmmmmmmmmmmm.....")
     Future(args.a + args.b)
   }
 }
