@@ -114,7 +114,7 @@ lazy val verboseService = (project in file("verboseService")).
       "com.twitter" %% "finagle-core" % versions.finagle
     ),
     javaOptions in Universal ++= Seq(
-      "-Dlog.service.output=verboseService.log"
+      "-Dlog.service.output=verboseService"
     )
   ).
   aggregate(verboseServiceIdl).
@@ -149,7 +149,7 @@ lazy val calculatorService = (project in file("calculatorService")).
       "com.twitter" %% "finagle-core" % versions.finagle
     ),
     javaOptions in Universal ++= Seq(
-      "-Dlog.service.output=calculatorService.log"
+      "-Dlog.service.output=calculatorService"
     )
   ).
   aggregate(calculatorServiceIdl).
