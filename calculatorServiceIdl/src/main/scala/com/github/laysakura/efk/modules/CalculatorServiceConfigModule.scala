@@ -9,5 +9,5 @@ object CalculatorServiceConfigModule extends TwitterModule {
   @Singleton
   @Provides
   @CalculatorServiceServer
-  def provide: String = "localhost:5000"
+  def provide: String = "app2:5000"
 }
