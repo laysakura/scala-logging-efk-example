@@ -8,6 +8,8 @@ import com.twitter.finatra.thrift.Controller
 import com.twitter.inject.Logging
 import com.twitter.util.{Await, Future}
 
+import scala.util.{Failure, Success, Try}
+
 @Singleton
 class VerboseServiceController @Inject() (
   calcClient: CalculatorService$FinagleClient
@@ -24,6 +26,13 @@ class VerboseServiceController @Inject() (
 
     warn(s"""Verbose "WHAT IS 1+1, Mr. Calc?"Mr. Calc "Mmm... It's ${Await.result(calcClient.sum(1, 1))}!!"\n""")
 
+    Try(throwsError) match {
+      case Success(_) =>
+      case Failure(e) => error(s"Got error from throwsError() : $e")
+    }
+
     Future(s"You said: ${args.message}")
   }
+
+  private def throwsError: Int = 1 / 0
 }
