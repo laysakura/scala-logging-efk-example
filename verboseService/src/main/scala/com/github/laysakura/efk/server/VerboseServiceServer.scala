@@ -2,8 +2,8 @@ package com.github.laysakura.efk.server
 
 import com.github.laysakura.efk.controllers.VerboseServiceController
 import com.github.laysakura.efk.modules.{CalculatorServiceConfigModule, CalculatorServiceModule, ClientIdModule}
-import com.twitter.finatra.thrift.filters.{LoggingMDCFilter, ThriftMDCFilter, TraceIdMDCFilter}
 import com.twitter.finatra.thrift.ThriftServer
+import com.twitter.finatra.thrift.filters._
 import com.twitter.finatra.thrift.routing.ThriftRouter
 
 class VerboseServiceServer extends ThriftServer
@@ -22,12 +22,11 @@ class VerboseServiceServer extends ThriftServer
 
   override def configureThrift(router: ThriftRouter) {
     router
-      // TODO filterを追加し、ログを見る
       .filter[LoggingMDCFilter]
       .filter[TraceIdMDCFilter]
       .filter[ThriftMDCFilter]
-//      .filter[thrift.filters.AccessLoggingFilter]
-//      .filter[thrift.filters.StatsFilter]
+      .filter[AccessLoggingFilter]
+      .filter[StatsFilter]
       .add[VerboseServiceController]
   }
 }
