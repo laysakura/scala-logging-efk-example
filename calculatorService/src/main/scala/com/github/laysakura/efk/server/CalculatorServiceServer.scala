@@ -1,7 +1,7 @@
 package com.github.laysakura.efk.server
 
 import com.github.laysakura.efk.controllers.CalculatorServiceController
-import com.twitter.finatra.thrift.filters.TraceIdMDCFilter
+import com.twitter.finatra.thrift.filters._
 import com.twitter.finatra.thrift.ThriftServer
 import com.twitter.finatra.thrift.routing.ThriftRouter
 
@@ -16,12 +16,11 @@ class CalculatorServiceServer extends ThriftServer
 
   override def configureThrift(router: ThriftRouter) {
     router
-      // TODO filterを追加し、ログを見る
-//      .filter[thrift.filters.LoggingMDCFilter]
+      .filter[LoggingMDCFilter]
       .filter[TraceIdMDCFilter]
-//      .filter[thrift.filters.ThriftMDCFilter]
-//      .filter[thrift.filters.AccessLoggingFilter]
-//      .filter[thrift.filters.StatsFilter]
+      .filter[ThriftMDCFilter]
+      .filter[AccessLoggingFilter]
+      .filter[StatsFilter]
       .add[CalculatorServiceController]
   }
 }
