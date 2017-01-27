@@ -28,7 +28,7 @@ class VerboseServiceController @Inject() (
 
     Try(throwsError) match {
       case Success(_) =>
-      case Failure(e) => error(s"Got error from throwsError() : $e")
+      case Failure(e) => error(s"Got error from throwsError()", e)
     }
 
     Future(s"You said: ${args.message}")
